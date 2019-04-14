@@ -1,25 +1,72 @@
-import java.util.Set;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
-public final class Block {
-   public final long ownerId;
-   public final Block parent;
-   public final Set<Simulation.Transaction> transactions;
-   public final String message;
-   public final int height;
-   
-   public Block(long ownerId, Block parent, Set<Simulation.Transaction> transactions, String message) {
-      this.ownerId = ownerId;
-      this.parent = parent;
-      this.transactions = transactions;         
-      this.message = message;
-      this.height = 1 + (parent==null ? 1 : parent.height);
-   }
-   
-   public Block(long ownerId, Block parent, Set<Simulation.Transaction> transactions) {
-      this(ownerId, parent, transactions, null);
+
+public class Block {
+
+   public static final double COINBASE = 25; 
+
+   private byte[] hash;
+   private byte[] prevBlockHash;
+   private Transaction coinbase;
+   private ArrayList<Transaction> txs;
+
+   // address to which the coinbase transaction would go
+   public Block(byte[] prevHash, RSAKey address) {
+      prevBlockHash = prevHash;
+      coinbase = new Transaction(COINBASE, address);
+      txs = new ArrayList<Transaction>();
    }
 
-   public int hashCode() {
-      return transactions.hashCode();
+   public Transaction getCoinbase() {
+      return coinbase;
+   }
+
+   public byte[] getHash() {
+      return hash;
+   }
+
+   public byte[] getPrevBlockHash() {
+      return prevBlockHash;
+   }
+
+   public ArrayList<Transaction> getTransactions() {
+      return txs;
+   }
+
+   public Transaction getTransaction(int index) {
+      return txs.get(index);
+   }
+
+   public void addTransaction(Transaction tx) {
+      txs.add(tx);
+   }
+
+   public byte[] getRawBlock() {
+      ArrayList<Byte> rawBlock = new ArrayList<Byte>();
+      if (prevBlockHash != null)
+         for (int i = 0; i < prevBlockHash.length; i++)
+            rawBlock.add(prevBlockHash[i]);
+      for (int i = 0; i < txs.size(); i++) {
+         byte[] rawTx = txs.get(i).getRawTx();
+         for (int j = 0; j < rawTx.length; j++) {
+            rawBlock.add(rawTx[j]);
+         }
+      }
+      byte[] raw = new byte[rawBlock.size()];
+      for (int i = 0; i < raw.length; i++)
+         raw[i] = rawBlock.get(i);
+      return raw;
+   }
+
+   public void finalize() {
+      try {
+         MessageDigest md = MessageDigest.getInstance("SHA-256");
+         md.update(getRawBlock());
+         hash = md.digest();
+      } catch(NoSuchAlgorithmException x) {
+         x.printStackTrace(System.err);
+      }
    }
 }
