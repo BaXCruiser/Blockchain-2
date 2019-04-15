@@ -96,7 +96,7 @@ public class Transaction {
       }
    }
 
-   private byte[] hash;    // hash of the transaction, its unique id
+   private byte[] hash;    // hash of the transaction its unique id
    private ArrayList<Input> inputs;   // inputs
    private ArrayList<Output> outputs; // outputs
    private boolean coinbase;
