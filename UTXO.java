@@ -1,4 +1,4 @@
-/* 
+/*
  * This class represents an unspent transaction output (UTXO)
  */
 
@@ -30,7 +30,7 @@ public class UTXO implements Comparable<UTXO> {
    }
    
    // Compares this UTXO to the one specified by <other>, considering them equal if 
-   // they have <txHash> arrays with equal contents and equal <index> values
+   // they have txHash arrays with equal contents and equal <index> values
    public boolean equals(Object other) {
       if (other == null) {
          return false;
