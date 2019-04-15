@@ -1,6 +1,5 @@
 /* 
  * UTXO.java
- * 
  * This class represents an unspent transaction output (UTXO)
  */
 
